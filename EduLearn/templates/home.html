@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h1>Welcome to EduLearn</h1>
+    <p>Explore a variety of courses and enhance your learning experience.</p>
+    <a href="{% url 'course_list' %}" class="btn btn-primary">Browse Courses</a>
+</div>
+{% endblock %}

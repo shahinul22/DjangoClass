@@ -1,0 +1,38 @@
+{% extends "base.html" %}  <!-- Extends the base template -->
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Add New Course</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_title" class="form-label">Course Title</label>
+                    {{ form.title }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_description" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_duration" class="form-label">Duration (in hours)</label>
+                    {{ form.duration }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_thumbnail" class="form-label">Thumbnail</label>
+                    {{ form.thumbnail }}
+                </div>
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="mt-4 d-flex flex-column align-items-center">
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary mb-3">Add Course</button>
+                        <!-- Back Button -->
+                        <a href="{% url 'course_list' %}" class="btn btn-secondary">Back to Course List</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}  <!-- Extends the base template -->
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow p-4">
+        <h1 class="text-primary">{{ course.title }}</h1>
+        <p class="text-muted">{{ course.description }}</p>
+
+        <!-- Course Thumbnail -->
+        <!-- {% if course.thumbnail %}
+        <div class="text-center mb-3">
+            <img src="{{ course.thumbnail.url }}" class="img-fluid rounded" style="max-width: 400px;">
+        </div>
+        {% endif %} -->
+
+        <h2 class="mt-4">Lessons</h2>
+
+        <!-- Add New Lesson Button -->
+        <!-- <div class="mb-3">
+            <a href="{% url 'add_lesson' course.id %}" class="btn btn-success">Add New Lesson</a>
+        </div> -->
+
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Content</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lesson in lessons %}
+                <tr>
+                    <td>{{ lesson.title }}</td>
+                    <td>{{ lesson.content }}</td>
+                    <td class="d-flex flex-column justify-content-center align-items-center">
+                        <a href="{% url 'edit_lesson' lesson.id %}" class="btn btn-info btn-sm mb-1">Edit</a>
+                        <form method="POST" action="{% url 'delete_lesson' lesson.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="mt-4">
+            <a href="{% url 'course_list' %}" class="btn btn-secondary">Back to Course List</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

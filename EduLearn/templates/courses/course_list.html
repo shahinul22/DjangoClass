@@ -1,0 +1,50 @@
+{% extends "base.html" %}  <!-- This makes the template extend base.html -->
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Available Courses</h1>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>Course Title</th>
+                    <th>Description</th>
+                    <th>Duration</th>
+                    <th>Thumbnail</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>{{ course.title }}</td>
+                    <td>{{ course.description }}</td>
+                    <td>{{ course.duration }} hrs</td>
+                    <td>
+                        {% if course.thumbnail %}
+                        <img src="{{ course.thumbnail.url }}" class="thumbnail-img img-thumbnail" style="width: 80px; height: auto;">
+                        {% else %}
+                        <span class="text-muted">No Image</span>
+                        {% endif %}
+                    </td>
+                    <td class="d-flex flex-column justify-content-center align-items-center">
+                        <a href="{% url 'edit_course' course.id %}" class="btn btn-info btn-sm mb-1">Edit</a>
+                        <form method="POST" action="{% url 'delete_course' course.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                    <td>
+                        <a href="{% url 'course_detail' course.id %}" class="btn btn-primary btn-sm">View Details</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-4">
+            <a href="{% url 'add_course' %}" class="btn btn-secondary">Add New Course</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
