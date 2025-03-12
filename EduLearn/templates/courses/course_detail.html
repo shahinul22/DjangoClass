@@ -1,52 +1,70 @@
-{% extends "base.html" %}  <!-- Extends the base template -->
+{% extends "base.html" %}
 
 {% block content %}
 <div class="container mt-5">
-    <div class="card shadow p-4">
-        <h1 class="text-primary">{{ course.title }}</h1>
-        <p class="text-muted">{{ course.description }}</p>
+    <!-- Center the content -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="card shadow p-4">
+                  <!-- Course Title with Background Color -->
+                  <h1 class="text-white text-center p-4 rounded " style="background-color: #007bff;">{{ course.title }}</h1>
+                
+                  <!-- Course Description with Background Color -->
+                  <p class="text-white text-center p-3 rounded" style="background-color: #28a745;">{{ course.description }}</p>
+  
+                <!-- Course Thumbnail -->
+                <!-- {% if course.thumbnail %}
+                <div class="text-center mb-3">
+                    <img src="{{ course.thumbnail.url }}" class="img-fluid rounded" style="max-width: 400px;">
+                </div>
+                {% endif %} -->
 
-        <!-- Course Thumbnail -->
-        <!-- {% if course.thumbnail %}
-        <div class="text-center mb-3">
-            <img src="{{ course.thumbnail.url }}" class="img-fluid rounded" style="max-width: 400px;">
-        </div>
-        {% endif %} -->
+                <!-- Lessons Section -->
+                <h2 class="mt-4">Lessons</h2>
 
-        <h2 class="mt-4">Lessons</h2>
+                <!-- Add New Lesson Button -->
+                <div class="mb-3 text-center">
+                    <a href="{% url 'add_lesson' course.id %}" class="btn btn-success btn-lg">
+                        <i class="fas fa-plus-circle"></i> Add New Lesson
+                    </a>
+                </div>
 
-        <!-- Add New Lesson Button -->
-        <!-- <div class="mb-3">
-            <a href="{% url 'add_lesson' course.id %}" class="btn btn-success">Add New Lesson</a>
-        </div> -->
+                <!-- Lessons Table -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">Title</th>
+                                <th scope="col">Content</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for lesson in lessons %}
+                            <tr>
+                                <td>{{ lesson.title }}</td>
+                                <td>{{ lesson.content|truncatewords:10 }}</td>
+                                <td class="d-flex justify-content-center">
+                                    <a href="{% url 'edit_lesson' lesson.id %}" class="btn btn-info btn-sm mx-1">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <a href="{% url 'delete_lesson_confirm' lesson.id %}" class="btn btn-danger btn-sm mx-1">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
-        <table class="table table-bordered">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col">Title</th>
-                    <th scope="col">Content</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for lesson in lessons %}
-                <tr>
-                    <td>{{ lesson.title }}</td>
-                    <td>{{ lesson.content }}</td>
-                    <td class="d-flex flex-column justify-content-center align-items-center">
-                        <a href="{% url 'edit_lesson' lesson.id %}" class="btn btn-info btn-sm mb-1">Edit</a>
-                        <form method="POST" action="{% url 'delete_lesson' lesson.id %}" class="d-inline">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <div class="mt-4">
-            <a href="{% url 'course_list' %}" class="btn btn-secondary">Back to Course List</a>
+                <!-- Back to Course List Button -->
+                <div class="mt-4 text-center">
+                    <a href="{% url 'course_list' %}" class="btn btn-secondary btn-lg">
+                        <i class="fas fa-arrow-left"></i> Back to Course List
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
