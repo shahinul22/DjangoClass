@@ -6,37 +6,48 @@
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10 col-sm-12">
             <div class="card shadow p-4">
-                  <!-- Course Title with Background Color -->
-                  <h1 class="text-white text-center p-4 rounded " style="background-color: #007bff;">{{ course.title }}</h1>
-                
-                  <!-- Course Description with Background Color -->
-                  <p class="text-white text-center p-3 rounded" style="background-color: #28a745;">{{ course.description }}</p>
-  
-                <!-- Course Thumbnail -->
+
+                <!-- Course Title with Background Color -->
+                <h1 class="text-white text-center p-4 rounded" style="background-color: #007bff;">
+                    {{ course.title }}
+                </h1>
+
+                <!-- Course Description with Background Color -->
+                <p class="text-white text-center p-3 rounded mb-4" style="background-color: #28a745;">
+                    {{ course.description }}
+                </p>
+        
+
+                <!-- Course Thumbnail (Uncomment if needed) -->
                 <!-- {% if course.thumbnail %}
                 <div class="text-center mb-3">
                     <img src="{{ course.thumbnail.url }}" class="img-fluid rounded" style="max-width: 400px;">
                 </div>
                 {% endif %} -->
 
-                <!-- Lessons Section -->
-                <h2 class="mt-4">Lessons</h2>
-
-                <!-- Add New Lesson Button -->
-                <div class="mb-3 text-center">
-                    <a href="{% url 'add_lesson' course.id %}" class="btn btn-success btn-lg">
-                        <i class="fas fa-plus-circle"></i> Add New Lesson
-                    </a>
+                <!-- Actions Section: Add Lesson & View Enrolled Students -->
+                <div class="d-flex justify-content-center mb-4">
+                    <div class="mb-3 mx-2">
+                        <a href="{% url 'add_lesson' course.id %}" class="btn btn-success btn-lg">
+                            <i class="fas fa-plus-circle"></i> Add New Lesson
+                        </a>
+                    </div>
+                    <div class="mb-3 mx-2">
+                        <a href="{% url 'view_enrolled_students' course.id %}" class="btn btn-primary btn-lg">
+                            View Enrolled Students
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Lessons Table -->
-                <div class="table-responsive">
+                <!-- Lessons Table Section -->
+                <h2 class="mt-4">Lessons</h2>
+                <div class="table-responsive mt-3">
                     <table class="table table-bordered table-hover">
                         <thead class="table-dark">
                             <tr>
                                 <th scope="col">Title</th>
                                 <th scope="col">Content</th>
-                                <th>Action</th>
+                                <th scope="col">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,6 +75,7 @@
                         <i class="fas fa-arrow-left"></i> Back to Course List
                     </a>
                 </div>
+
             </div>
         </div>
     </div>

@@ -2,11 +2,25 @@
 
 {% block content %}
 <div class="container mt-4">
+    <!-- Display Messages -->
+    {% if messages %}
+    <div class="mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Page Heading -->
     <h1 class="text-center mb-4 text-primary">Available Courses</h1>
 
-    <!-- Table to list the courses -->
+    <!-- Course Table Section -->
     <div class="table-responsive">
         <table class="table table-hover table-bordered table-striped text-center">
+            <!-- Table Header -->
             <thead class="table-dark">
                 <tr>
                     <th>Course Title</th>
@@ -17,12 +31,21 @@
                     <th>Details</th>
                 </tr>
             </thead>
+
+            <!-- Table Body -->
             <tbody>
                 {% for course in courses %}
                 <tr>
+                    <!-- Course Title -->
                     <td>{{ course.title }}</td>
+
+                    <!-- Course Description -->
                     <td>{{ course.description|truncatewords:10 }}</td>
+
+                    <!-- Course Duration -->
                     <td>{{ course.duration }} hrs</td>
+
+                    <!-- Course Thumbnail -->
                     <td>
                         {% if course.thumbnail %}
                         <img src="{{ course.thumbnail.url }}" class="img-thumbnail" style="width: 80px; height: auto;" alt="{{ course.title }}">
@@ -30,6 +53,8 @@
                         <span class="text-muted">No Image</span>
                         {% endif %}
                     </td>
+
+                    <!-- Course Actions -->
                     <td class="d-flex justify-content-center">
                         <a href="{% url 'edit_course' course.id %}" class="btn btn-info btn-sm me-2">
                             <i class="fas fa-edit"></i> Edit
@@ -38,6 +63,8 @@
                             <i class="fas fa-trash-alt"></i> Delete
                         </a>
                     </td>
+
+                    <!-- Course Details -->
                     <td>
                         <a href="{% url 'course_detail' course.id %}" class="btn btn-primary btn-sm">
                             <i class="fas fa-info-circle"></i> View Details
@@ -49,7 +76,7 @@
         </table>
     </div>
 
-    <!-- Button to Add New Course -->
+    <!-- Add New Course Button -->
     <div class="mt-1 mb-4 text-center">
         <a href="{% url 'add_course' %}" class="btn btn-success btn-lg">
             <i class="fas fa-plus-circle"></i> Add New Course
