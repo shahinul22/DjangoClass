@@ -2,7 +2,6 @@ from django import forms
 from .models import Course, Lesson, Student
 from django.contrib.auth.models import User
 
-
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
@@ -14,7 +13,6 @@ class CourseForm(forms.ModelForm):
             "thumbnail": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
 
-
 class LessonForm(forms.ModelForm):
     class Meta:
         model = Lesson
@@ -23,7 +21,6 @@ class LessonForm(forms.ModelForm):
             "title": forms.TextInput(attrs={"class": "form-control"}),
             "content": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
         }
-
 
 class CourseEnrollmentForm(forms.Form):
     student_name = forms.CharField(
@@ -39,7 +36,6 @@ class CourseEnrollmentForm(forms.Form):
         label="Select Course",
         widget=forms.Select(attrs={"class": "form-control"}),
     )
-
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:
@@ -57,13 +53,3 @@ class UserUpdateForm(forms.ModelForm):
              'email': forms.EmailInput(attrs={'class': 'form-control'}),
              
          }
-
-
-# class UserUpdateForm(forms.ModelForm):
-#     class Meta:
-#         model = User
-#         fields = ['username', 'email']
-#         widgets = {
-#             'username': forms.TextInput(attrs={'class': 'form-control'}),
-#             'email': forms.EmailInput(attrs={'class': 'form-control'}),
-#         }

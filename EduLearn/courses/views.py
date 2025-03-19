@@ -11,6 +11,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import render, get_object_or_404, redirect
 
 
+
 # for authentication 
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
@@ -48,8 +49,12 @@ def add_course(request):
         form = CourseForm(request.POST, request.FILES)  # Handle form data and file upload
         if form.is_valid():
             form.save()  # Save the new course to the database
+            messages.success(request, "Course added successfully!")
             return redirect('course_list')  # Redirect to the course list after adding the course
+        else:
+            messages.error(request, "Error adding course. Please try again.")
     else:
+        messages.error(request, "Error adding course. Please try again.")
         form = CourseForm()
     
     return render(request, 'courses/add_course.html', {'form': form})
@@ -60,6 +65,7 @@ def delete_course_confirm(request, id):
 
     if request.method == 'POST':  # If the user confirms deletion
         course.delete()  # Delete the course
+        messages.success(request, "Course deleted successfully!")
         return redirect('course_list')  # Redirect to the course list page
 
     return render(request, 'courses/course_confirm_delete.html', {'course': course})
@@ -70,8 +76,12 @@ def edit_course(request, course_id):
         form = CourseForm(request.POST, request.FILES, instance=course)
         if form.is_valid():
             form.save()
+            messages.success(request, "Updated course details")
             return redirect('course_list')  # Redirect back to the course list after saving the course
+        else:
+            messages.error(request, "Error adding course. Please try again.")
     else:
+        # messages.error(request, "Error adding course. Please try again.")
         form = CourseForm(instance=course)
 
     return render(request, 'courses/edit_course.html', {'form': form, 'course': course})
@@ -87,8 +97,12 @@ def add_lesson(request, course_id):
             lesson = form.save(commit=False)
             lesson.course = course
             lesson.save()
+            messages.success(request, "Lesson added successfully!")
             return redirect('course_detail', course_id=course.id)
+        else:
+            messages.error(request, "Error adding course. Please try again.")
     else:
+        # messages.error(request, "Error adding course. Please try again.")
         form = LessonForm()
     
     return render(request, 'courses/add_lesson.html', {'form': form, 'course': course})
@@ -99,8 +113,12 @@ def edit_lesson(request, lesson_id):
         form = LessonForm(request.POST, instance=lesson)
         if form.is_valid():
             form.save()
+            messages.success(request, "Updated lesson details")
             return redirect('course_detail', course_id=lesson.course.id)
+        else:
+            messages.error(request, "Error adding course. Please try again.")
     else:
+        # messages.error(request, "Error adding course. Please try again.")
         form = LessonForm(instance=lesson)
 
     return render(request, 'courses/edit_lesson.html', {'form': form, 'lesson': lesson})
@@ -109,6 +127,7 @@ def delete_lesson(request, lesson_id):
     lesson = get_object_or_404(Lesson, id=lesson_id)
     course_id = lesson.course.id
     lesson.delete()
+    # messages.success(request, "Lesson deleted successfully!")
     return redirect('course_detail', course_id=course_id)
 
 def delete_lesson_confirm(request, lesson_id):
@@ -118,6 +137,7 @@ def delete_lesson_confirm(request, lesson_id):
     if request.method == 'POST':
         # If confirmed, delete the lesson and redirect
         lesson.delete()
+        messages.success(request, "Lesson deleted successfully!")
         return redirect('course_detail', course_id=lesson.course.id)  # Adjust this URL as needed
 
     # If it's a GET request, show the confirmation page
@@ -139,6 +159,7 @@ def enroll_student(request):
             # Check if the student is already enrolled in the selected course
             if student.enrolled_course.filter(id=course.id).exists():
                 # If already enrolled, display a message
+                messages.warning(request, f"{student.name}, you are already enrolled in {course.title}.")
                 return render(request, 'courses/enrollment_success.html', {
                     'student': student,
                     'course': course,
@@ -146,6 +167,7 @@ def enroll_student(request):
                 })
 
             # Enroll the student in the selected course
+            messages.success(request, f"Congratulations {student.name}! You have been enrolled in {course.title}.")
             student.enrolled_course.add(course)
 
             # Redirect to the success page
