@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Enrollment {% if already_enrolled %}Already Successful{% else %}Successful{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="alert {% if already_enrolled %}alert-warning{% else %}alert-success{% endif %} text-center">
+        <h2>{% if already_enrolled %}Already Enrolled{% else %}Enrollment Successful{% endif %}</h2>
+        <p>
+            {% if already_enrolled %}
+                {{ student.name|default:student.email }} is already enrolled in <strong>{{ course.title }}</strong>.
+            {% else %}
+                {{ student.name|default:student.email }} has been successfully enrolled in <strong>{{ course.title }}</strong>.
+            {% endif %}
+        </p>
+        <a href="{% url 'course_list' %}" class="btn btn-primary">Back to Courses</a>
+    </div>
+</div>
+{% endblock %}

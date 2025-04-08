@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container mt-5 text-center">
+      <!-- Heading -->
+      <h1 class="display-4 mb-3">Welcome to EduLearn</h1>
+
+      <!-- Subheading -->
+      <p class="lead mb-4">Explore a variety of courses and enhance your learning experience.</p>
+
+      <!-- Call-to-Action Button -->
+      <a href="{% url 'course_list' %}" class="btn btn-primary btn-lg">Browse Courses</a>
+    </div>
+  </section>
+
+  <!-- Additional Sections (Optional) -->
+
+  <section class="features-section py-5 bg-light">
+    <div class="container text-center">
+      <h2 class="mb-4">Why Choose EduLearn?</h2>
+      <div class="row">
+        <div class="col-md-4">
+          <h3>Expert Instructors</h3>
+          <p>Learn from industry professionals with years of experience.</p>
+        </div>
+        <div class="col-md-4">
+          <h3>Flexible Learning</h3>
+          <p>Study at your own pace, anytime and anywhere.</p>
+        </div>
+        <div class="col-md-4">
+          <h3>Hands-On Projects</h3>
+          <p>Gain practical skills with real-world projects.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials-section py-5">
+    <div class="container text-center">
+      <h2 class="mb-4">What Our Students Say</h2>
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+          <blockquote class="blockquote">
+            <p>"EduLearn has transformed my career. The courses are well-structured and easy to follow."</p>
+            <footer class="blockquote-footer">John Doe</footer>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

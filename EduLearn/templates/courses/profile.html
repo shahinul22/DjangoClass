@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h1 class="card-title text-center">Profile Page</h1>
+        </div>
+        <div class="card-body">
+          <h3 class="card-subtitle mb-3 text-muted text-center">
+            Welcome, <strong>{{ user.username }}</strong>!
+          </h3>
+          <hr>
+          <div class="row">
+            <div class="col-md-6">
+              <h5 class="card-text"><strong>First Name:</strong></h5>
+              <p class="card-text">{{ user.first_name }}</p>
+            </div>
+            <div class="col-md-6">
+              <h5 class="card-text"><strong>Last Name:</strong></h5>
+              <p class="card-text">{{ user.last_name }}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <h5 class="card-text"><strong>Username:</strong></h5>
+              <p class="card-text">{{ user.username }}</p>
+            </div>
+            <div class="col-md-6">
+              <h5 class="card-text"><strong>Email:</strong></h5>
+              <p class="card-text">{{ user.email }}</p>
+            </div>
+          </div>
+          <hr>
+          <div class="text-center">
+            <a href="{% url 'profile_update' %}" class="btn btn-primary btn-lg">
+              <i class="fas fa-edit"></i> Update Profile
+            </a>
+          </div>
+          <!-- Change Password Button -->
+          <div class="text-center mt-3">
+            <a href="{% url 'password_change' %}" class="btn btn-danger btn-lg">
+              <i class="fas fa-key"></i> Change Password
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

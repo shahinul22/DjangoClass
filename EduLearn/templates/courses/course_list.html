@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Display Messages -->
+    {% if messages %}
+    <div class="mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message|safe }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>        
+        {% endfor %}
+    </div>
+    {% endif %} 
+
+    {% for message in messages %}
+    <script>console.log("Message:", "{{ message }}");</script>
+    {% endfor %}
+
+    <!-- Page Heading -->
+    <h1 class="text-center mb-4 text-primary">Available Courses</h1>
+
+    <!-- Course Table Section -->
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered table-striped text-center">
+            <!-- Table Header -->
+            <thead class="table-dark">
+                <tr>
+                    <th>Course Title</th>
+                    <th>Description</th>
+                    <th>Duration</th>
+                    <th>Thumbnail</th>
+                    <th>Actions</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+
+            <!-- Table Body -->
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <!-- Course Title -->
+                    <td>{{ course.title }}</td>
+
+                    <!-- Course Description -->
+                    <td>{{ course.description|truncatewords:10 }}</td>
+
+                    <!-- Course Duration -->
+                    <td>{{ course.duration }} hrs</td>
+
+                    <!-- Course Thumbnail -->
+                    <td>
+                        {% if course.thumbnail %}
+                        <img src="{{ course.thumbnail.url }}" class="img-thumbnail" style="width: 80px; height: auto;"
+                            alt="{{ course.title }}">
+                        {% else %}
+                        <span class="text-muted">No Image</span>
+                        {% endif %}
+                    </td>
+
+                    <!-- Course Actions -->
+                    <td class="d-flex justify-content-center">
+                        <a href="{% url 'edit_course' course.id %}" class="btn btn-info btn-sm me-2">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'delete_course_confirm' course.id %}" class="btn btn-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </a>
+                    </td>
+
+                    <!-- Course Details -->
+                    <td>
+                        <a href="{% url 'course_detail' course.id %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-info-circle"></i> View Details
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add New Course Button -->
+    <div class="mt-1 mb-4 text-center">
+        <a href="{% url 'add_course' %}" class="btn btn-success btn-lg">
+            <i class="fas fa-plus-circle"></i> Add New Course
+        </a>
+    </div>
+</div>
+{% endblock %}
