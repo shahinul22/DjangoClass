@@ -1,87 +1,110 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <!-- Center the content -->
+  <div class="container mt-5">
     <div class="row justify-content-center">
-        <!-- Display Messages -->
-        {% if messages %}
+      {% if messages %}
         <div class="mt-3">
-            {% for message in messages %}
+          {% for message in messages %}
             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                {{ message|safe }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>            
-            {% endfor %}
-        </div>
-        {% endif %} 
-        <div class="col-lg-8 col-md-10 col-sm-12">
-            <div class="card shadow p-4">
-
-                <!-- Course Title with Background Color -->
-                <h1 class="text-white text-center p-4 rounded" style="background-color: #007bff;">
-                    {{ course.title }}
-                </h1>
-
-                <!-- Course Description with Background Color -->
-                <p class="text-white text-center p-3 rounded mb-4" style="background-color: #28a745;">
-                    {{ course.description }}
-                </p>
-
-                <!-- Actions Section: Add Lesson & View Enrolled Students -->
-                <div class="d-flex justify-content-center mb-4">
-                    <div class="mb-3 mx-2">
-                        <a href="{% url 'add_lesson' course.id %}" class="btn btn-success btn-lg">
-                            <i class="fas fa-plus-circle"></i> Add New Lesson
-                        </a>
-                    </div>
-                    <div class="mb-3 mx-2">
-                        <a href="{% url 'view_enrolled_students' course.id %}" class="btn btn-primary btn-lg">
-                            <i class="fa-solid fa-users"></i>  View Enrolled Students
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Lessons Table Section -->
-                <h2 class="mt-4">Lessons</h2>
-                <div class="table-responsive mt-3">
-                    <table class="table table-bordered table-hover">
-                        <thead class="table-dark">
-                            <tr>
-                                <th scope="col">Title</th>
-                                <th scope="col">Content</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for lesson in lessons %}
-                            <tr>
-                                <td>{{ lesson.title }}</td>
-                                <td>{{ lesson.content|truncatewords:10 }}</td>
-                                <td class="d-flex justify-content-center">
-                                    <a href="{% url 'edit_lesson' lesson.id %}" class="btn btn-info btn-sm mx-1">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </a>
-                                    <a href="{% url 'delete_lesson_confirm' lesson.id %}"
-                                        class="btn btn-danger btn-sm mx-1">
-                                        <i class="fas fa-trash-alt"></i> Delete
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Back to Course List Button -->
-                <div class="mt-4 text-center">
-                    <a href="{% url 'course_list' %}" class="btn btn-secondary btn-lg">
-                        <i class="fas fa-arrow-left"></i> Back to Course List
-                    </a>
-                </div>
-
+              {{ message|safe }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+          {% endfor %}
         </div>
+      {% endif %}
+
+      <div class="col-lg-8 col-md-10 col-sm-12">
+        <div class="card shadow p-4">
+          <!-- Course Title -->
+          <h1 class="text-white text-center p-4 rounded" style="background-color: #007bff;">{{ course.title }}</h1>
+
+          <!-- Course Description -->
+          <p class="text-white text-center p-3 rounded mb-4" style="background-color: #28a745;">{{ course.description }}</p>
+
+          <!-- Action Buttons -->
+          <div class="d-flex justify-content-center mb-4">
+            <div class="mb-3 mx-2">
+              <a href="{% url 'add_lesson' course.id %}" class="btn btn-success btn-lg"><i class="fas fa-plus-circle"></i> Add New Lesson</a>
+            </div>
+            <div class="mb-3 mx-2">
+              <a href="{% url 'view_enrolled_students' course.id %}" class="btn btn-primary btn-lg"><i class="fa-solid fa-users"></i> View Enrolled Students</a>
+            </div>
+          </div>
+          <!-- Progress Bar -->
+          {% if student and course in student.enrolled_courses.all %}
+          <div class="mb-4">
+            <label for="progress" class="form-label fw-bold">Progress: {{ progress_percent }}%</label>
+            <div class="progress">
+              <div id="progress" class="progress-bar bg-success" role="progressbar" style="width: {{ progress_percent }}%;" aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100">{{ progress_percent }}%</div>
+            </div>
+          </div>
+          {% endif %}
+          <!-- Lessons Table -->
+          <h2 class="mt-4">Lessons</h2>
+          <div class="table-responsive mt-3">
+            <table class="table table-bordered table-hover">
+              <thead class="table-dark">
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Content</th>
+                  {% if user.is_superuser %}
+                    <th>Action</th>
+                  {% endif %}
+                  {% comment %} <th>Action</th> {% endcomment %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for lesson in lessons %}
+                  <tr>
+                    <td>{{ lesson.id }}</td>
+                    <td>
+                      {{ lesson.title }}
+                      {% if student and course in student.enrolled_courses.all %}
+                        {% if lesson in completed_lessons %}
+                          ✅ Completed
+                        {% else %}
+                          <a href="{% url 'complete_lesson' lesson.id %}">Mark as complete</a>
+                        {% endif %}
+                      {% else %}
+                        {% comment %} <span class="text-danger fw-bold">Only enrolled students can mark lessons as complete.</span> {% endcomment %}
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% with word_count=lesson.content|wordcount %}
+                        {% if word_count > 6 %}
+                          <span class="short-content" id="short-{{ lesson.id }}">{{ lesson.content|truncatewords:6 }}</span>
+                          <span class="full-content d-none" id="full-{{ lesson.id }}">{{ lesson.content }}</span>
+                          <br />
+                          <button class="btn btn-link p-0" onclick="toggleContent({{ lesson.id }})" id="btn-{{ lesson.id }}">Read More</button>
+                        {% else %}
+                          {{ lesson.content }}
+                        {% endif %}
+                      {% endwith %}
+                    </td>
+                    {% if user.is_superuser %}
+                      {% comment %} <th>Action</th> {% endcomment %}
+
+                      <td class="d-flex justify-content-center flex-wrap">
+                        {% if user.is_authenticated %}
+                          <a href="{% url 'edit_lesson' lesson.id %}" class="btn btn-info btn-sm mx-1 mb-1"><i class="fas fa-edit"></i> Edit</a>
+                          <a href="{% url 'delete_lesson_confirm' lesson.id %}" class="btn btn-danger btn-sm mx-1 mb-1"><i class="fas fa-trash-alt"></i> Delete</a>
+                        {% endif %}
+                      </td>
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Back Button -->
+          <div class="mt-4 text-center">
+            <a href="{% url 'course_list' %}" class="btn btn-secondary btn-lg"><i class="fas fa-arrow-left"></i> Back to Course List</a>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock %}

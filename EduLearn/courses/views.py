@@ -17,16 +17,55 @@ def base(request):
     return render(request, 'base.html')  # Correct
 def home(request):
     return render(request, 'home.html')  # Correct
-
+@login_required
 def course_list(request):
     courses = Course.objects.all()
     return render(request, 'courses/course_list.html', {'courses': courses})
 
-def course_detail(request, course_id):
-    course = get_object_or_404(Course, id=course_id)  # Get the course by its ID
-    lessons = course.lessons.all()  # Fetch all lessons for this course
-    return render(request, 'courses/course_detail.html', {'course': course, 'lessons': lessons})
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Course, Lesson, Student
 
+
+@login_required
+def course_detail(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    lessons = course.lessons.all()
+
+    student = Student.objects.filter(user=request.user).first()
+
+    if student and course in student.enrolled_courses.all():
+        completed_lessons = student.completed_lessons.filter(course=course)
+    else:
+        completed_lessons = []
+
+    total_lessons = lessons.count()
+    completed = len(completed_lessons)
+    progress_percent = (completed / total_lessons) * 100 if total_lessons > 0 else 0
+
+    return render(request, 'courses/course_detail.html', {
+        'course': course,
+        'lessons': lessons,
+        'student': student,
+        'completed_lessons': completed_lessons,
+        'progress_percent': progress_percent,
+    })
+
+
+@login_required
+def complete_lesson(request, lesson_id):
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    student = Student.objects.filter(user=request.user).first()
+
+    # Prevent marking as complete if not enrolled
+    if student and lesson.course in student.enrolled_courses.all():
+        if lesson not in student.completed_lessons.all():
+            student.completed_lessons.add(lesson)
+            student.save()
+    else:
+        messages.warning(request, "You must be enrolled in this course to mark lessons as completed.")
+
+    return redirect('course_detail', course_id=lesson.course.id)
 
 def add_course(request):
     if request.method == 'POST':
@@ -123,6 +162,7 @@ def delete_lesson_confirm(request, lesson_id):
     # If it's a GET request, show the confirmation page
     return render(request, 'courses/lesson_delete_confirmation.html', {'lesson': lesson})
 
+
 def enroll_student(request):
     if request.method == 'POST':
         form = CourseEnrollmentForm(request.POST)
@@ -137,7 +177,7 @@ def enroll_student(request):
             student.save()
 
             # Check if the student is already enrolled in the selected course
-            if student.enrolled_course.filter(id=course.id).exists():
+            if student.enrolled_courses.filter(id=course.id).exists():  # Corrected here
                 # If already enrolled, display a message
                 messages.warning(request, f"{student.name}, you are already enrolled in {course.title}.")
                 return render(request, 'courses/enrollment_success.html', {
@@ -148,7 +188,7 @@ def enroll_student(request):
 
             # Enroll the student in the selected course
             messages.success(request, f"Congratulations {student.name}! You have been enrolled in {course.title}.")
-            student.enrolled_course.add(course)
+            student.enrolled_courses.add(course)
 
             # Redirect to the success page
             return render(request, 'courses/enrollment_success.html', {
@@ -160,8 +200,6 @@ def enroll_student(request):
         form = CourseEnrollmentForm()
 
     return render(request, 'courses/enroll_student.html', {'form': form})
-
-
 
 
 def view_enrolled_students(request, course_id):
@@ -177,13 +215,17 @@ def view_enrolled_students(request, course_id):
     })
 
 
+
 def register(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            # 👇 Automatically create Student
+            Student.objects.create(user=user, name=user.username, email=user.email)
+            
             messages.success(request, "Registration successful!")
-            return redirect("login")  # Redirect to login page after successful registration
+            return redirect("login")
         else:
             messages.error(request, "Registration failed. Please check the form for errors.")
     else:
@@ -198,7 +240,8 @@ def user_login(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, "Login successful!")
-            return redirect('/')
+            return redirect('student_dashboard')  # Instead of '/'
+
         else:
             messages.error(request, "Invalid username or password.")
     else:
@@ -209,11 +252,6 @@ def user_logout(request):
     logout(request)
     messages.success(request, "You have been logged out.")
     return redirect('/')
-
-@login_required
-def course_list(request):
-    courses = Course.objects.all()
-    return render(request, 'courses/course_list.html', {'courses': courses})
 
 @login_required
 def profile(request):
@@ -254,3 +292,32 @@ class CustomPasswordResetConfirmView(PasswordResetConfirmView):
 # Password Reset Complete View, shows a confirmation that the password has been reset
 class CustomPasswordResetCompleteView(PasswordResetCompleteView):
     template_name = 'courses/password_reset_complete.html'
+
+
+
+@login_required
+def student_dashboard(request):
+    student = Student.objects.filter(user=request.user).first()
+    if not student:
+        messages.warning(request, "Student profile not found.")
+        return redirect('/')
+
+    enrolled_courses = student.enrolled_courses.all()
+    course_progress = []
+
+    for course in enrolled_courses:
+        lessons = course.lessons.all()
+        completed_lessons = student.completed_lessons.filter(course=course)
+        total = lessons.count()
+        completed = completed_lessons.count()
+        progress = int((completed / total) * 100) if total > 0 else 0
+
+        course_progress.append({
+            'course': course,
+            'progress': progress,
+            'next_lesson': (lessons.exclude(id__in=completed_lessons.values_list('id', flat=True)).first())
+        })
+
+    return render(request, 'courses/student_dashboard.html', {
+        'course_progress': course_progress
+    })

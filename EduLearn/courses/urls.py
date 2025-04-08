@@ -1,12 +1,18 @@
 from django.urls import path
 from . import views
 from .views import (
+    register,
+    user_login, 
+    user_logout, 
+    profile, 
+    profile_update,
     CustomPasswordResetView,
     CustomPasswordResetDoneView,
     CustomPasswordResetConfirmView,
     CustomPasswordResetCompleteView,
+    student_dashboard,
 )
-from .views import register, user_login, user_logout, profile, profile_update
+  
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
@@ -21,6 +27,9 @@ urlpatterns = [
     # Lesson URLs
     path("courses/<int:course_id>/lessons/add/", views.add_lesson, name="add_lesson"),
     path("lessons/edit/<int:lesson_id>/", views.edit_lesson, name="edit_lesson"),
+    path('lesson/<int:lesson_id>/complete/', views.complete_lesson, name='complete_lesson'),
+    # path('<int:course_id>/', views.course_detail, name='course_detail'),
+
     path("delete_lesson_confirm/<int:lesson_id>/",views.delete_lesson_confirm,name="delete_lesson_confirm",),
     # enroll urls
     path("enroll/", views.enroll_student, name="enroll_student"),
@@ -38,4 +47,6 @@ urlpatterns = [
     path("password_reset/done/", CustomPasswordResetDoneView.as_view(), name="password_reset_done"),
     path("password_reset_confirm/<uidb64>/<token>/", CustomPasswordResetConfirmView.as_view(), name="password_reset_confirm"),
     path("password_reset_complete/", CustomPasswordResetCompleteView.as_view(), name="password_reset_complete"),
+    # dashboard
+    path('dashboard/', student_dashboard, name='student_dashboard'),
 ]

@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Your Dashboard</h2>
+<ul>
+    {% for item in course_progress %}
+    <li>
+        <h4>{{ item.course.title }}</h4>
+        <p>Progress: {{ item.progress }}%</p>
+        {% if item.next_lesson %}
+            <a href="{% url 'course_detail' item.course.id %}">Continue with "{{ item.next_lesson.title }}"</a>
+        {% else %}
+            <span>All lessons completed!</span>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
