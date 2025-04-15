@@ -11,6 +11,9 @@ from .views import (
     CustomPasswordResetConfirmView,
     CustomPasswordResetCompleteView,
     student_dashboard,
+    CourseListAPI, 
+    CourseDetailAPI,
+    EnrollStudentAPI,
 )
   
 from django.contrib.auth import views as auth_views
@@ -49,4 +52,8 @@ urlpatterns = [
     path("password_reset_complete/", CustomPasswordResetCompleteView.as_view(), name="password_reset_complete"),
     # dashboard
     path('dashboard/', student_dashboard, name='student_dashboard'),
+    # API views 
+    path("api/courses/", CourseListAPI.as_view(), name="api_course_list"),
+    path("api/courses/<int:pk>/", CourseDetailAPI.as_view(), name="api_course_detail"),
+    path('api/enroll/', EnrollStudentAPI.as_view(), name='api_enroll_student'),
 ]

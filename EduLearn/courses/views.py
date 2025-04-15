@@ -3,6 +3,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Course, Lesson, Student
 
 from .forms import CourseForm, LessonForm, CourseEnrollmentForm
+# API views 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import CourseSerializer
 
 # for authentication 
 
@@ -321,3 +326,36 @@ def student_dashboard(request):
     return render(request, 'courses/student_dashboard.html', {
         'course_progress': course_progress
     })
+
+
+
+#  API views
+class CourseListAPI(APIView):
+    def get(self, request):
+        courses = Course.objects.all()
+        serializer = CourseSerializer(courses, many=True)
+        return Response(serializer.data)
+
+
+class CourseDetailAPI(APIView):
+    def get(self, request, pk):
+        try:
+            course = Course.objects.get(pk=pk)
+        except Course.DoesNotExist:
+            return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = CourseSerializer(course)
+        return Response(serializer.data)
+class EnrollStudentAPI(APIView):
+    def post(self, request):
+        student_email = request.data.get('email')
+        course_id = request.data.get('course_id')
+
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        student, _ = Student.objects.get_or_create(email=student_email)
+        student.enrolled_courses.add(course)
+
+        return Response({'message': f'{student.email} has been enrolled in {course.title}'})

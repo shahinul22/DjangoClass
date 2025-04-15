@@ -2,7 +2,11 @@
 from pathlib import Path
 import os
 
+
 from django.contrib.messages import constants as messages
+
+# Base directory
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,9 +15,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-42pu7e!mu02$sd#1qlad_#tsiv0s7szc7=u=-uba)c8m&g6ec-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = False
+ALLOWED_HOSTS = ['*']  # Use '*' only for testing
 
 # Application definition
 
@@ -24,7 +27,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'courses'
+    'courses',
+    # 'coursesrest_framework',
+    'rest_framework',
+     
+    
 ]
 
 MIDDLEWARE = [
